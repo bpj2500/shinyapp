@@ -32,16 +32,17 @@ ui <-
 #########        
         dashboardBody( 
             tabItems(      
-                tabItem(tabName = "subitem1", h2("General Trends in the United States"), 
+                tabItem(tabName = "subitem1", h2("College Demographics in 2014"), 
                         fluidRow( 
                             box(plotlyOutput("plot1"), width = 4), 
                             box(plotlyOutput("plot2"), width = 6)
                         )
                 ),  
-                tabItem(tabName = "subitem2", h2("Trends in the United States"), 
+                tabItem(tabName = "subitem2", h2("Tuition & Financial Aid"), 
                         fluidRow( 
                             box(plotlyOutput("plot3"), width = 4), 
-                            box(plotlyOutput("plot4"), width = 6)
+                            box(plotlyOutput("plot4"), width = 6), 
+                            box(plotlyOutput("plot5"), width = 5)
                             ))
                 )
         )
@@ -124,7 +125,18 @@ server <- function(input, output) {
             coord_cartesian(xlim = c(2010,2018)) + 
             theme_bw()
         )
-    
+    output$plot5 <- renderPlotly(
+        college_data %>% 
+            group_by(type, year) %>% 
+            summarise(yearly_aid = median(total_price) - median(net_cost)) %>% 
+            arrange(desc(yearly_aid)) %>% 
+            ggplot(aes(x = year, y = yearly_aid)) + 
+            geom_point(aes(color = type)) + 
+            geom_line(aes(color = type)) +
+            theme(axis.text = element_text(angle =0, hjust = 1)) + 
+            coord_cartesian(xlim = c(2010,2018)) + 
+            theme_bw()
+    )
 }
 
     
