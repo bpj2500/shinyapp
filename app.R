@@ -8,7 +8,8 @@
 #
 
 library(shiny) 
-library(shinydashboard)
+library(shinydashboard) 
+
 
 # Define UI for application that draws a histogram
 ui <- 
@@ -19,8 +20,9 @@ ui <-
             sidebarUserPanel("Author : Brian Perez"), 
             
             sidebarMenu( 
-                menuItem("Overview", 
-                         tabName = "intro", icon = icon("book-reader"))
+                menuItem("General Trends in the USA", 
+                         tabName = "intro", icon = icon("book-reader"),
+                         menuSubItem("Demographics 2014", tabName = "Subtab 1"))
                 )
             
         ),
@@ -28,7 +30,7 @@ ui <-
         
 #########        
         dashboardBody(
-            tabItem(tabName = "intro", h2("General Trends in the United States"), 
+            tabItem(tabName = "Demographics 2014", h2("General Trends in the United States"), 
                 fluidRow( 
                     box(plotOutput("plot1"), width = 4), 
                     box(plotOutput("plot2"), width = 6)
