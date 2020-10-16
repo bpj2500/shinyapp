@@ -7,7 +7,8 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
+library(shiny) 
+library(shinydashboard)
 
 # Define UI for application that draws a histogram
 ui <- 
@@ -63,10 +64,11 @@ server <- function(input, output) {
             mutate(percentage = group_sum / total_population *100) %>% 
             ggplot(mapping = aes(x = category, y = percentage, fill = type)) + 
             geom_col(position = 'stack') + 
+            theme_bw() +
             theme(axis.text = element_text(angle =90, hjust = 1)) 
         )
     output$plot2 <- renderPlot( 
-        combined_data %>% 
+        college_data %>% 
             filter(category != "Total Minority" & category != "Unknown") %>% 
             group_by(type, category) %>%
             summarise(group_sum = sum(enrollment)) %>% 
@@ -85,7 +87,8 @@ server <- function(input, output) {
             arrange(desc(group_sum)) %>%
             ggplot( aes(x = category, y = proportion_of_money, fill = type)) + 
             geom_col(position = "dodge") + 
-            coord_flip()
+            coord_flip() + 
+            theme_bw()
         
         
         
