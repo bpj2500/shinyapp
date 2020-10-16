@@ -7,17 +7,17 @@
 #    http://shiny.rstudio.com/
 #
 
-fluidPage(
-    titlePanel("University Tuition, Cost, and Support"), 
-    sidebarLayout( 
-        sidebarPanel(
-            selectizeInput(inputId = 'name', 
-                           label = 'Name of School', 
-                           choices = unique(college_data$name), 
-                           options= list(maxOptions = 2000))
-        ),
-        mainPanel(plotOutput("tuition"))
-    )
-)
 
+navbarPage("EDA of College Tuition", 
+           tabPanel("Trends over the Years", 
+                    sidebarPanel(
+                      selectizeInput(inputId = 'name', 
+                                     label = 'Name of School', 
+                                     choices = unique(college_data$name), 
+                                     options= list(maxOptions = 2000))
+                    ),
+                    mainPanel(plotOutput("tuition"))
+                    
+                    )
+           )
 
