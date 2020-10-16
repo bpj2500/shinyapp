@@ -76,8 +76,8 @@ server <- function(input, output) {
             group_by(category) %>% 
             mutate(total_population = sum(group_sum)) %>% 
             ungroup() %>%  
-            mutate(tuition_spent = ifelse(type == 'For Profit', group_sum*avgs_2014[1] / 10**9, 
-                                          ifelse(type == "Private", group_sum * avgs_2014[2] / 10**9, group_sum * avgs_2014[3] / 10**9)
+            mutate(tuition_spent = ifelse(type == 'For Profit', group_sum*avgs_2014[1], 
+                                          ifelse(type == "Private", group_sum * avgs_2014[2], group_sum * avgs_2014[3])
             ),
             proportion_of_money = ifelse(type == 'For Profit', (group_sum*avgs_2014[1]) / (total_population*avgs_2014[1]), 
                                          ifelse(type == "Private", (group_sum * avgs_2014[2]) / (total_population*avgs_2014[2]), 
