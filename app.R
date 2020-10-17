@@ -69,7 +69,9 @@ ui <-
                 tabItem(tabName = "subitem3", h2("Income Levels & Financial Costs"), 
                         fluidRow( 
                             box(plotOutput("plot6"), width = 5), 
-                            box(plotOutput("plot7"), width = 5)
+                            box(plotOutput("plot7"), width = 5),
+                            box(plotlyOutput("plot8"), width = 5), 
+                            box(plotlyOutput("plot9"), width = 5)
                             )
                         )
                 
@@ -171,7 +173,7 @@ server <- function(input, output) {
             group_by(year, income_lvl, type) %>% 
             summarise(med_cost = median(net_cost)) %>% 
             ggplot(aes(x = income_lvl, y = med_cost, color = type)) + 
-            geom_point() + 
+            geom_point(size = 4) + 
             facet_wrap(~ year) + 
             theme_bw() +
             theme(axis.text = element_text(angle =45, hjust = 1))  
@@ -181,12 +183,35 @@ server <- function(input, output) {
             group_by(year, income_lvl, type) %>% 
             summarise(med_aid = median(total_price) - median(net_cost)) %>% 
             ggplot(aes(x = income_lvl, y = med_aid, color = type)) + 
-            geom_point() + 
+            geom_point(size = 4) + 
             facet_wrap(~ year) + 
             theme_bw() +
             theme(axis.text = element_text(angle =45, hjust = 1)) 
+        ) 
+    
+    output$plot8 <- renderPlotly( 
+        college_data %>% 
+            filter(year == 2018) %>% 
+            group_by(income_lvl, type) %>% 
+            summarise(med_cost = median(net_cost)) %>% 
+            ggplot(aes(x = income_lvl, y = med_cost, color = type)) + 
+            geom_point(size = 5) + 
+            theme_bw() +
+            theme(axis.text = element_text(angle =45, hjust = 1)) + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         )
     
+    output$plot9 <- renderPlotly( 
+        college_data %>% 
+            filter(year == 2018) %>% 
+            group_by(income_lvl, type) %>% 
+            summarise(med_aid = median(total_price) - median(net_cost)) %>% 
+            ggplot(aes(x = income_lvl, y = med_aid, color = type)) + 
+            geom_point(size = 5) + 
+            theme_bw() +
+            theme(axis.text = element_text(angle =45, hjust = 1)) + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
+        )
 }
 
     
