@@ -10,6 +10,26 @@
 library(shiny) 
 library(shinydashboard) 
 library(plotly)
+library(dplyr) 
+library(readr) 
+library(ggplot2) 
+library(shiny) 
+library(shinydashboard)
+library(tidyr)
+
+college_data <- read_csv("college_data.csv") 
+avgs_2014 <- college_data %>% 
+    filter(year == 2014) %>% 
+    group_by(type) %>% 
+    summarise(yearly_cost = mean(net_cost)) %>% 
+    select(yearly_cost) %>% 
+    unlist() %>% 
+    unname()
+
+
+
+
+
 
 # Define UI for application that draws a histogram
 ui <- 
@@ -23,7 +43,8 @@ ui <-
                 menuItem("General Trends in the USA", 
                          tabName = "intro", icon = icon("book-reader"),
                          menuSubItem("Demographics 2014", tabName = "subitem1"), 
-                         menuSubItem("Countrywide Yearly Trends", tabName = "subitem2"))
+                         menuSubItem("Countrywide Yearly Trends", tabName = "subitem2"), 
+                         menuSubItem("Tuition Costs & Income Levels", tabName = "subitem3"))
                 )
             
         ),
@@ -43,7 +64,15 @@ ui <-
                             box(plotlyOutput("plot3"), width = 4), 
                             box(plotlyOutput("plot4"), width = 6), 
                             box(plotlyOutput("plot5"), width = 5)
-                            ))
+                            )
+                ), 
+                tabItem(tabName = "subitem3", h2("Income Levels & Financial Costs"), 
+                        fluidRow( 
+                            box(plotOutput("plot6"), width = 5), 
+                            box(plotOutput("plot7"), width = 5)
+                            )
+                        )
+                
                 )
         )
 )
@@ -137,6 +166,27 @@ server <- function(input, output) {
             coord_cartesian(xlim = c(2010,2018)) + 
             theme_bw()
     )
+    output$plot6 <- renderPlot( 
+        college_data %>% 
+            group_by(year, income_lvl, type) %>% 
+            summarise(med_cost = median(net_cost)) %>% 
+            ggplot(aes(x = income_lvl, y = med_cost, color = type)) + 
+            geom_point() + 
+            facet_wrap(~ year) + 
+            theme_bw() +
+            theme(axis.text = element_text(angle =45, hjust = 1))  
+        )
+    output$plot7 <- renderPlot( 
+        college_data %>% 
+            group_by(year, income_lvl, type) %>% 
+            summarise(med_aid = median(total_price) - median(net_cost)) %>% 
+            ggplot(aes(x = income_lvl, y = med_aid, color = type)) + 
+            geom_point() + 
+            facet_wrap(~ year) + 
+            theme_bw() +
+            theme(axis.text = element_text(angle =45, hjust = 1)) 
+        )
+    
 }
 
     
