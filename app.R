@@ -85,13 +85,16 @@ ui <-
                             box(plotlyOutput("plot11"), width = 5)
                             )
                         ), 
-                tabItem(tabName = "Tools", h2("Line Plot"),  
+                tabItem(tabName = "Tools", h2("Plots"),  
                         fluidRow( 
+                            box(plotOutput("plot12"), width = 6), 
+                            box(plotlyOutput("plot13"), width = 6), 
                             box(selectizeInput(inputId = "State", 
                                                label = "State Name", 
-                                               choices = unique(college_data$state)), width = 3),
-                            box(plotOutput("plot12"), width = 6)
-                            ))
+                                               choices = unique(college_data$state)), width = 4)
+                            
+                            )
+                        )
                 
                 
                 )
@@ -283,7 +286,21 @@ server <- function(input, output) {
             xlab("Annual Year")
         
         )
-
+    
+    output$plot13 <- renderPlotly(  
+        college_data %>% 
+            filter(category != "Total Minority" & category != "Unknown" & year == 2014 & state == input$State) %>% 
+            group_by(type, category) %>%
+            summarise(group_sum = sum(enrollment)) %>% 
+            ungroup() %>% 
+            group_by(category) %>% 
+            mutate(total_population = sum(group_sum), 
+                   group_proportion = group_sum / total_population) %>% 
+            ggplot(aes(x = category, y = group_proportion)) + 
+            geom_col(aes(fill = type)) + 
+            coord_flip() + 
+            theme_bw()
+        )
 }
 
     
