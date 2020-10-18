@@ -45,10 +45,10 @@ ui <-
                          tabName = "overview"),
                 menuItem("General Trends in the USA", 
                          tabName = "intro", icon = icon("book-reader"),
-                         menuSubItem("Demographics 2014", tabName = "subitem1"), 
-                         menuSubItem("Countrywide Yearly Trends", tabName = "subitem2"), 
-                         menuSubItem("Tuition Costs & Income Levels", tabName = "subitem3"), 
-                         menuSubItem("University Types in the USA", tabName = "subitem4")), 
+                         menuSubItem("Countrywide Yearly Trends", tabName = "subitem1"), 
+                         menuSubItem("Financial Costs by Income Level", tabName = "subitem2"), 
+                         menuSubItem("University Demographics in 2014", tabName = "subitem3"), 
+                         menuSubItem("Distribution of University Types", tabName = "subitem4")), 
                 menuItem("Interactive Tools",  
                          tabName = "Tools", icon = icon("book-reader")
                          
@@ -86,25 +86,25 @@ ui <-
                         ),
                 
                 
-                tabItem(tabName = "subitem1", h2("College Demographics in 2014"), 
+                tabItem(tabName = "subitem1", h2("Yearly Trends in Tuition Prices, Cost, & Aid"), 
                         fluidRow( 
-                            box(plotlyOutput("plot1"), width = 4), 
-                            box(plotlyOutput("plot2"), width = 6)
+                            box(plotlyOutput("plot3"), width = 5), 
+                            box(plotlyOutput("plot4"), width = 5), 
+                            box(plotlyOutput("plot5"), width = 5)
                         )
                 ),  
-                tabItem(tabName = "subitem2", h2("Tuition & Financial Aid"), 
-                        fluidRow( 
-                            box(plotlyOutput("plot3"), width = 4), 
-                            box(plotlyOutput("plot4"), width = 6), 
-                            box(plotlyOutput("plot5"), width = 5)
-                            )
-                ), 
-                tabItem(tabName = "subitem3", h2("Income Levels & Financial Costs"), 
+                tabItem(tabName = "subitem2", h2("Variations in Costs by Income Level"), 
                         fluidRow( 
                             box(plotOutput("plot6"), width = 5), 
-                            box(plotOutput("plot7"), width = 5),
+                            box(plotOutput("plot7"), width = 5), 
                             box(plotlyOutput("plot8"), width = 5), 
                             box(plotlyOutput("plot9"), width = 5)
+                            )
+                ), 
+                tabItem(tabName = "subitem3", h2("College Demographics in 2014"), 
+                        fluidRow( 
+                            box(plotlyOutput("plot1"), width = 6),
+                            box(plotlyOutput("plot2"), width = 6)
                             )
                         ),
                 tabItem(tabName = "subitem4", h2("Map of the Number of Universities across the US"), 
@@ -157,7 +157,9 @@ server <- function(input, output) {
             ggplot(mapping = aes(x = category, y = percentage, fill = type)) + 
             geom_col(position = 'stack') + 
             theme_bw() +
-            theme(axis.text = element_text(angle =90, hjust = 1)) 
+            theme(axis.text = element_text(hjust = 1)) + 
+            coord_flip() + 
+            labs(fill = "School Type")
         )
     output$plot2 <- renderPlotly( 
         college_data %>% 
@@ -180,7 +182,8 @@ server <- function(input, output) {
             ggplot( aes(x = category, y = proportion_of_money, fill = type)) + 
             geom_col(position = "dodge") + 
             coord_flip() + 
-            theme_bw()
+            theme_bw() + 
+            labs(fill = "School Type")
         )
     output$plot3 <- renderPlotly(  
         college_data %>% 
@@ -192,8 +195,14 @@ server <- function(input, output) {
             geom_line(aes(color = type)) +
             theme(axis.text = element_text(angle =0, hjust = 1)) + 
             coord_cartesian(xlim = c(2010,2018)) + 
-            theme_bw()
-        )
+            theme_bw() + 
+            xlab("Year") + 
+            ylab("Median Total Tuition") + 
+            ggtitle("Total Tuition Prices by School Type") + 
+            labs(color = "School Type") + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public')) 
+    )
+        
     output$plot4 <- renderPlotly( 
         college_data %>% 
             group_by(type, year) %>% 
@@ -204,7 +213,12 @@ server <- function(input, output) {
             geom_line(aes(color = type)) +
             theme(axis.text = element_text(angle =0, hjust = 1)) + 
             coord_cartesian(xlim = c(2010,2018)) + 
-            theme_bw()
+            theme_bw() + 
+            xlab("Year") + 
+            ylab("Median Student Cost of Tuition") + 
+            ggtitle("Student Cost by School Type") + 
+            labs(color = "School Type") + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         )
     output$plot5 <- renderPlotly(
         college_data %>% 
@@ -216,7 +230,12 @@ server <- function(input, output) {
             geom_line(aes(color = type)) +
             theme(axis.text = element_text(angle =0, hjust = 1)) + 
             coord_cartesian(xlim = c(2010,2018)) + 
-            theme_bw()
+            theme_bw() + 
+            xlab("Year") + 
+            ylab("Median Financial Support") + 
+            ggtitle("Financial Support School Type") + 
+            labs(color = "School Type") + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
     )
     output$plot6 <- renderPlot( 
         college_data %>% 
@@ -226,7 +245,8 @@ server <- function(input, output) {
             geom_point(size = 4) + 
             facet_wrap(~ year) + 
             theme_bw() +
-            theme(axis.text = element_text(angle =45, hjust = 1))  
+            theme(axis.text = element_text(angle =45, hjust = 1)) + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         )
     output$plot7 <- renderPlot( 
         college_data %>% 
@@ -236,7 +256,8 @@ server <- function(input, output) {
             geom_point(size = 4) + 
             facet_wrap(~ year) + 
             theme_bw() +
-            theme(axis.text = element_text(angle =45, hjust = 1)) 
+            theme(axis.text = element_text(angle =45, hjust = 1)) + 
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         ) 
     
     output$plot8 <- renderPlotly( 
@@ -245,10 +266,13 @@ server <- function(input, output) {
             group_by(income_lvl, type) %>% 
             summarise(med_cost = median(net_cost)) %>% 
             ggplot(aes(x = income_lvl, y = med_cost, color = type)) + 
-            geom_point(size = 5) + 
+            geom_point(size = 4) + 
             theme_bw() +
             theme(axis.text = element_text(angle =45, hjust = 1)) + 
-            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public')) + 
+            xlab("Income Level") + 
+            ylab("Median Student Cost") + 
+            ggtitle("Student Cost by Income Level in 2018")
         )
     
     output$plot9 <- renderPlotly( 
@@ -260,7 +284,10 @@ server <- function(input, output) {
             geom_point(size = 5) + 
             theme_bw() +
             theme(axis.text = element_text(angle =45, hjust = 1)) + 
-            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
+            scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public')) + 
+            xlab("Income Level") + 
+            ylab("Median Financial Support") + 
+            ggtitle("Financial Support by Income Level in 2018")
         )
     
     output$plot10 <- renderPlotly({ 
