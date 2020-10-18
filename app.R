@@ -15,7 +15,8 @@ library(readr)
 library(ggplot2) 
 library(shiny) 
 library(shinydashboard)
-library(tidyr)
+library(tidyr) 
+library(usmap)
 
 college_data <- read_csv("college_data.csv") 
 avgs_2014 <- college_data %>% 
@@ -35,11 +36,13 @@ avgs_2014 <- college_data %>%
 ui <- 
     
     dashboardPage(
-        dashboardHeader(title = "EDA of College Data"),
+        dashboardHeader(title = "Exploratory "),
         dashboardSidebar(
             sidebarUserPanel("Author : Brian Perez"), 
             
-            sidebarMenu( 
+            sidebarMenu(
+                menuItem("Overview", 
+                         tabName = "overview"),
                 menuItem("General Trends in the USA", 
                          tabName = "intro", icon = icon("book-reader"),
                          menuSubItem("Demographics 2014", tabName = "subitem1"), 
@@ -57,7 +60,32 @@ ui <-
         
 #########        
         dashboardBody( 
-            tabItems(      
+            tabItems(  
+                tabItem(tabName = "overview", 
+                      fluidRow(   
+                          column( 
+                              width = 8, offset = 2, align = "center", 
+                              box(width = 12, h1(tags$b("Exploratory Data Analysis of College Tuition, Financial Support, & Group Demographics")), 
+                                  br(), 
+                                  br(), 
+                                  img(src = "college_campus2.jpg"), 
+                                  br(), 
+                                  br(), 
+                                  h4("Throughout their history, colleges and universities within the United States have proven to be ladders of economic and social mobility. More often than naught, the pursuance of a bachelor's degree, or other higher accreditations, at these institutions grants students a wide range of unique career and job opportunities that they otherwise might not have had access to. In fact, for many professions and industries, a bachelor's degree is now seen as a minimum requirement for many entry-level positions, and further career advancement may also be dependent on additional post-baccalaureate education. Because of this, more people than ever before are enrolling in college and universities for the hope of seeking education and training in their potential professions; however, the cost of higher education is also higher than it has ever been with many students often using student loans to help supplement their tuition payments. Given the environment as it currently is, understanding how tuition costs have changed in the recent years and how certain demographic groups are moving throughout the college education system may be key to informing education policies, informing businesses and industries on where/how they should search for talent, and also how individuals should weigh the costs of pursing a college degree.  
+                                    "), 
+                                  br(), 
+                                  h4("The goal of the project is to characterize some of trends regarding college tuition prices over the years and how they relate to students of various income levels and historically underrepresented demographic groups in order to gain insights and generate further questions in assessing the economics of colleges and universities."
+                                     ),
+                                  br(),
+                                  h5("Presentation by Brian Perez")
+                                  )
+                              
+                              )
+                          )
+                        
+                        ),
+                
+                
                 tabItem(tabName = "subitem1", h2("College Demographics in 2014"), 
                         fluidRow( 
                             box(plotlyOutput("plot1"), width = 4), 
