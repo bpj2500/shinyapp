@@ -44,7 +44,12 @@ ui <-
                          tabName = "intro", icon = icon("book-reader"),
                          menuSubItem("Demographics 2014", tabName = "subitem1"), 
                          menuSubItem("Countrywide Yearly Trends", tabName = "subitem2"), 
-                         menuSubItem("Tuition Costs & Income Levels", tabName = "subitem3"))
+                         menuSubItem("Tuition Costs & Income Levels", tabName = "subitem3"), 
+                         menuSubItem("University Types in the USA", tabName = "subitem4")), 
+                menuItem("Interactive Tools",  
+                         tabName = "Tools", icon = icon("book-reader")
+                         
+                         )
                 )
             
         ),
@@ -73,7 +78,21 @@ ui <-
                             box(plotlyOutput("plot8"), width = 5), 
                             box(plotlyOutput("plot9"), width = 5)
                             )
-                        )
+                        ),
+                tabItem(tabName = "subitem4", h2("Map of the Number of Universities across the US"), 
+                        fluidRow( 
+                            box(plotlyOutput("plot10"), width = 5), 
+                            box(plotlyOutput("plot11"), width = 5)
+                            )
+                        ), 
+                tabItem(tabName = "Tools", h2("Line Plot"),  
+                        fluidRow( 
+                            box(selectizeInput(inputId = "State", 
+                                               label = "State Name", 
+                                               choices = unique(college_data$state)), width = 3),
+                            box(plotOutput("plot12"), width = 6)
+                            ))
+                
                 
                 )
         )
@@ -212,6 +231,59 @@ server <- function(input, output) {
             theme(axis.text = element_text(angle =45, hjust = 1)) + 
             scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         )
+    
+    output$plot10 <- renderPlotly({ 
+        priv <-college_data %>% 
+            group_by(year, state, type) %>% 
+            summarise(university_totals = n_distinct(name)) %>% 
+            ungroup() %>%
+            filter(year == 2018) %>% 
+            pivot_wider(names_from = type, values_from = university_totals) %>% 
+            select(state, Private) 
+        
+            plot_usmap(data = priv, values = "Private") + 
+            scale_fill_continuous(name = "Number of Universities", 
+                                  low = "white", high = "red") + 
+            theme(legend.position = "right") + 
+            ggtitle("Number of Private Universities in America")
+        })  
+    
+    output$plot11 <- renderPlotly({ 
+        pub <- college_data %>% 
+            group_by(year, state, type) %>% 
+            summarise(university_totals = n_distinct(name)) %>% 
+            ungroup() %>%
+            filter(year == 2018) %>% 
+            pivot_wider(names_from = type, values_from = university_totals) %>% 
+            select(state, Public) 
+        
+            plot_usmap(data = pub, values = "Public") + 
+            scale_fill_continuous(name = "Number of Universities", 
+                                  low = "white", high = "red") + 
+            theme(legend.position = "right") + 
+            ggtitle("Number of Public Universities in America")
+        })
+    
+    output$plot12 <- renderPlot(  
+        college_data %>% 
+            filter(state == input$State & total_price <= 70000) %>% 
+            group_by(year, type) %>% 
+            summarise(total_tuition =  median(total_price),
+                      student_cost = median(net_cost), 
+                      financial_aid = total_tuition - student_cost) %>% 
+            pivot_longer(cols = c(total_tuition, student_cost, financial_aid), 
+                         names_to = "Finance", 
+                         values_to = "Money") %>%     
+            ggplot(aes(x = year, y = Money, color = Finance)) + 
+            geom_point(size = 4) + 
+            geom_line() + 
+            theme_bw() + 
+            facet_wrap(~ type) + 
+            ggtitle("Plots of Yearly Rates by State and Institution Type") + 
+            xlab("Annual Year")
+        
+        )
+
 }
 
     
