@@ -22,7 +22,7 @@ college_data <- read_csv("college_data.csv")
 avgs_2014 <- college_data %>% 
     filter(year == 2014) %>% 
     group_by(type) %>% 
-    summarise(yearly_cost = mean(net_cost)) %>% 
+    summarise(yearly_cost = median(net_cost)) %>% 
     select(yearly_cost) %>% 
     unlist() %>% 
     unname()
@@ -36,7 +36,7 @@ avgs_2014 <- college_data %>%
 ui <- 
     
     dashboardPage(
-        dashboardHeader(title = "Exploratory "),
+        dashboardHeader(title = "EDA of College Tuition"),
         dashboardSidebar(
             sidebarUserPanel("Author : Brian Perez"), 
             
@@ -46,18 +46,17 @@ ui <-
                 menuItem("General Trends in the USA", 
                          tabName = "intro", icon = icon("book-reader"),
                          menuSubItem("Countrywide Yearly Trends", tabName = "subitem1"), 
-                         menuSubItem("Financial Costs by Income Level", tabName = "subitem2"), 
-                         menuSubItem("University Demographics in 2014", tabName = "subitem3"), 
-                         menuSubItem("Distribution of University Types", tabName = "subitem4")), 
+                         menuSubItem("Examining Income Level", tabName = "subitem2"), 
+                         menuSubItem("Demographics in 2014", tabName = "subitem3"), 
+                         menuSubItem("Distribution of University Types", tabName = "subitem4"), 
                 menuItem("Interactive Tools",  
                          tabName = "Tools", icon = icon("book-reader")
-                         
                          )
                 )
             
-        ),
-        
-        
+        )
+        )
+        )        
 #########        
         dashboardBody( 
             tabItems(  
@@ -76,7 +75,14 @@ ui <-
                                   br(), 
                                   h4("The goal of the project is to characterize some of trends regarding college tuition prices over the years and how they relate to students of various income levels and historically underrepresented demographic groups in order to gain insights and generate further questions in assessing the economics of colleges and universities."
                                      ),
-                                  br(),
+                                  br(), 
+                                  h1(tags$b("Conclusions & Further Question")), 
+                                  br(), 
+                                  br(), 
+                                  h4("Based on the data present thus far, in examining the general trends occurring across university campuses; the overall price of college has increased over the past eight years. The increase is most notable in private institution, which in the span of eight years saw a tuition rise of nearly $10000 dollars. For profit and public institutions have seen much slower tuition rises. The net costs for students are also substantially among higher among private and for-profit schools. Unlike public and for-profit institutions, private institutions provide substantially more financial support to students than the other two institution types. However, despite that, public institutions overall bear the lowest cost for attendance. Even across income levels, although private institutions give significantly more financial support to lower income students than public or for-profit institutions. However, despite the relatively larger financial support, in 2014, across various demographic groups, over 70% of the student population of these groups enrolled themselves in public institutions. Moreover, a large majority of tuition dollars are being spent in public institutions rather than private or for-profit institutions.  Overall, what these data indicate is that public institutions seem  drawing in larger swaths of the populations, likely because of the lower economic costs. As a result, public institutions may serve as the primary means through which more diverse and economically disadvantaged groups obtain higher degrees."),
+                                  br(), 
+                                  br(), 
+                                  h4("The variables for this dataset are very limiting. A further investigation on this topic could look at information on incomes/salaries before and after graduating college would help examine outcomes along with information on student majors. Having information on the economic data on the students would also help determine what economic classes compose the student bodies at these institutions."),
                                   h5("Presentation by Brian Perez")
                                   )
                               
@@ -90,7 +96,9 @@ ui <-
                         fluidRow( 
                             box(plotlyOutput("plot3"), width = 5), 
                             box(plotlyOutput("plot4"), width = 5), 
-                            box(plotlyOutput("plot5"), width = 5)
+                            box(plotlyOutput("plot5"), width = 5), 
+                            box(h4("The following line graphs show the median total price, the median net cost, and the median financial support of universities in the United States from 2010 to 2018. Each of the graphs has three lines each depicting a different institution type: a for profit schools, private schools, and public schools. Overall, private schools have the highest total tuition and financial support. Furthermore, costs of private schools have increased the most over the whole eight years. For profit schools, have higher student costs for most years compared to the other two school types. Public schools overall have the lowest tuition prices, student cost, and financial support. ", 
+                                   width = 2))
                         )
                 ),  
                 tabItem(tabName = "subitem2", h2("Variations in Costs by Income Level"), 
@@ -98,21 +106,28 @@ ui <-
                             box(plotOutput("plot6"), width = 5), 
                             box(plotOutput("plot7"), width = 5), 
                             box(plotlyOutput("plot8"), width = 5), 
-                            box(plotlyOutput("plot9"), width = 5)
+                            box(plotlyOutput("plot9"), width = 5), 
+                            box(h4(" The top two dot plots show the median net cost, and financial support of universities in the United States by student income level faceted from 2010 to 2018. As the years increase, the net cost and aid increased overall; however, based on the two dot plots below that are zoom-ins of the year 2018, moving up income levels, the net cost increased and the financial support decreased, meaning that students with low income levels receive more financial support than higher income students. ", 
+                                   width = 5))
                             )
                 ), 
                 tabItem(tabName = "subitem3", h2("College Demographics in 2014"), 
                         fluidRow( 
                             box(plotlyOutput("plot1"), width = 6),
-                            box(plotlyOutput("plot2"), width = 6)
+                            box(plotlyOutput("plot2"), width = 6), 
+                            box(h4("The first bar plot is a stacked bar plot that shows the proportion of students for each demographic group that enrolled in type of school in the year 2014. The bar plot shows that across, all groups, the majority of students enrolled in public schools. The second bar plot shows the proportion of tuition dollars spent by each demographic group. Similar to the last graph, the majority of tuition dollars spent by each demographic group went largely to public institutions. ", 
+                                   width = 5))
                             )
                         ),
                 tabItem(tabName = "subitem4", h2("Map of the Number of Universities across the US"), 
                         fluidRow( 
                             box(plotlyOutput("plot10"), width = 5), 
-                            box(plotlyOutput("plot11"), width = 5)
+                            box(plotlyOutput("plot11"), width = 5), 
+                            box(h4("The two map sets show the distribution of private and public universities throughout the United  States. Across the United States, there are more public universities than there are private universities. More of the private universities in the United States lie along the east coast. Except for Texas and California, there are comparatively fewer private institutions in the South and western coast. Public institutions are more dispersed throughout the country.", 
+                                   width = 5))
                             )
                         ), 
+                
                 tabItem(tabName = "Tools", h2("Plots"),  
                         fluidRow( 
                             box(plotOutput("plot12"), width = 6), 
@@ -127,7 +142,8 @@ ui <-
                 
                 )
         )
-)
+
+
 
 
 
@@ -159,6 +175,8 @@ server <- function(input, output) {
             theme_bw() +
             theme(axis.text = element_text(hjust = 1)) + 
             coord_flip() + 
+            xlab("Demographic Group") + 
+            ylab("Percent") + 
             labs(fill = "School Type")
         )
     output$plot2 <- renderPlotly( 
@@ -183,6 +201,8 @@ server <- function(input, output) {
             geom_col(position = "dodge") + 
             coord_flip() + 
             theme_bw() + 
+            xlab("Demographic Group") + 
+            ylab("Percent") + 
             labs(fill = "School Type")
         )
     output$plot3 <- renderPlotly(  
@@ -215,7 +235,7 @@ server <- function(input, output) {
             coord_cartesian(xlim = c(2010,2018)) + 
             theme_bw() + 
             xlab("Year") + 
-            ylab("Median Student Cost of Tuition") + 
+            ylab("Median Student Cost") + 
             ggtitle("Student Cost by School Type") + 
             labs(color = "School Type") + 
             scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
@@ -245,7 +265,11 @@ server <- function(input, output) {
             geom_point(size = 4) + 
             facet_wrap(~ year) + 
             theme_bw() +
-            theme(axis.text = element_text(angle =45, hjust = 1)) + 
+            theme(axis.text = element_text(angle =45, hjust = 1)) +  
+            xlab("Year") + 
+            ylab("Median Student Cost") + 
+            ggtitle("Student Cost by School Type") + 
+            labs(color = "School Type") + 
             scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         )
     output$plot7 <- renderPlot( 
@@ -256,7 +280,10 @@ server <- function(input, output) {
             geom_point(size = 4) + 
             facet_wrap(~ year) + 
             theme_bw() +
-            theme(axis.text = element_text(angle =45, hjust = 1)) + 
+            theme(axis.text = element_text(angle =45, hjust = 1)) +  
+            xlab("Year") + 
+            ylab("Median Financial Support") + 
+            ggtitle("Financial Support School Type") + 
             scale_color_brewer(type = "qual", palette = "Set1", limits = c('For Profit', 'Private', 'Public'))
         ) 
     
