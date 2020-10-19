@@ -48,15 +48,14 @@ ui <-
                          menuSubItem("Countrywide Yearly Trends", tabName = "subitem1"), 
                          menuSubItem("Examining Income Level", tabName = "subitem2"), 
                          menuSubItem("Demographics in 2014", tabName = "subitem3"), 
-                         menuSubItem("Distribution of University Types", tabName = "subitem4"), 
+                         menuSubItem("Distribution of University Types", tabName = "subitem4")), 
                 menuItem("Interactive Tools",  
                          tabName = "Tools", icon = icon("book-reader")
                          )
                 )
             
-        )
-        )
-        )        
+        ),
+        
 #########        
         dashboardBody( 
             tabItems(  
@@ -76,7 +75,7 @@ ui <-
                                   h4("The goal of the project is to characterize some of trends regarding college tuition prices over the years and how they relate to students of various income levels and historically underrepresented demographic groups in order to gain insights and generate further questions in assessing the economics of colleges and universities."
                                      ),
                                   br(), 
-                                  h1(tags$b("Conclusions & Further Question")), 
+                                  h1("Conclusions & Further Question"), 
                                   br(), 
                                   br(), 
                                   h4("Based on the data present thus far, in examining the general trends occurring across university campuses; the overall price of college has increased over the past eight years. The increase is most notable in private institution, which in the span of eight years saw a tuition rise of nearly $10000 dollars. For profit and public institutions have seen much slower tuition rises. The net costs for students are also substantially among higher among private and for-profit schools. Unlike public and for-profit institutions, private institutions provide substantially more financial support to students than the other two institution types. However, despite that, public institutions overall bear the lowest cost for attendance. Even across income levels, although private institutions give significantly more financial support to lower income students than public or for-profit institutions. However, despite the relatively larger financial support, in 2014, across various demographic groups, over 70% of the student population of these groups enrolled themselves in public institutions. Moreover, a large majority of tuition dollars are being spent in public institutions rather than private or for-profit institutions.  Overall, what these data indicate is that public institutions seem  drawing in larger swaths of the populations, likely because of the lower economic costs. As a result, public institutions may serve as the primary means through which more diverse and economically disadvantaged groups obtain higher degrees."),
@@ -134,15 +133,11 @@ ui <-
                             box(plotlyOutput("plot13"), width = 6), 
                             box(selectizeInput(inputId = "State", 
                                                label = "State Name", 
-                                               choices = unique(college_data$state)), width = 4)
-                            
-                            )
+                                               choices = unique(college_data$state)), width = 4))
                         )
-                
-                
                 )
         )
-
+)
 
 
 
